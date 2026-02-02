@@ -331,11 +331,13 @@ namespace ICSharpCode.WpfDesign.Designer.Xaml
 				else {
 					if (property.DependencyProperty == null) {
 						try
-						{							
+						{
 							property.SetValueOnInstance(oldValueOnInstance);
 						}
-						catch(Exception)
-						{ }
+						catch(Exception ex)
+						{
+							Debug.WriteLine($"SetValueOnInstance failed for {property.Name}: {ex.Message}");
+						}
 					}
 
 					property.ResetInternal();

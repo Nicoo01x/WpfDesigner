@@ -57,8 +57,10 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			{
 				hidden = object.Equals(designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsHiddenProperty).GetConvertedValueOnInstance<bool>(), true);
 			}
-			catch (Exception)
-			{ }
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Failed to get IsHiddenProperty: {ex.Message}");
+			}
 			if (hidden) {
 				_isDesignTimeVisible = false;
 			}
@@ -68,15 +70,15 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			{
 				locked = object.Equals(designItem.Properties.GetAttachedProperty(DesignTimeProperties.IsLockedProperty).GetConvertedValueOnInstance<bool>(), true);
 			}
-			catch (Exception)
-			{ }
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"Failed to get IsLockedProperty: {ex.Message}");
+			}
 			if (locked) {
 				_isDesignTimeLocked = true;
 			}
 
-			//TODO
-
-			DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
+				DesignItem.NameChanged += new EventHandler(DesignItem_NameChanged);
 
 			if (DesignItem.ContentProperty != null && DesignItem.ContentProperty.IsCollection)
 			{
@@ -86,6 +88,21 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 			else
 			{
 				DesignItem.PropertyChanged += new PropertyChangedEventHandler(DesignItem_PropertyChanged);
+			}
+		}
+
+		/// <summary>
+		/// Unsubscribes from DesignItem events to prevent memory leaks.
+		/// Called by derived classes during disposal.
+		/// </summary>
+		protected void DisposeEventHandlers()
+		{
+			if (DesignItem != null) {
+				DesignItem.NameChanged -= DesignItem_NameChanged;
+				DesignItem.PropertyChanged -= DesignItem_PropertyChanged;
+				if (DesignItem.ContentProperty != null && DesignItem.ContentProperty.IsCollection) {
+					DesignItem.ContentProperty.CollectionElements.CollectionChanged -= CollectionElements_CollectionChanged;
+				}
 			}
 		}
 

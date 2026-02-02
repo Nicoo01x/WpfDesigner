@@ -116,8 +116,8 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				if (attachedGetter != null) {
 					return attachedGetter(instance);
 				}
-			} catch (Exception) {
-				
+			} catch (Exception ex) {
+				Debug.WriteLine($"Attached property getter failed: {ex.Message}");
 			}
 
 			var dependencyObject = instance as DependencyObject;
@@ -175,8 +175,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		{
 			try {
 				_propertyDescriptor.ResetValue(instance);
-			} catch (Exception) {
-				//For Example "UndoRedoSimpleBinding" will raise a exception here => look if it has Side Effects if we generally catch here?
+			} catch (Exception ex) {
+				// For Example "UndoRedoSimpleBinding" will raise an exception here
+				Debug.WriteLine($"ResetValue failed for {_propertyDescriptor.Name}: {ex.Message}");
 			}
 		}
 		

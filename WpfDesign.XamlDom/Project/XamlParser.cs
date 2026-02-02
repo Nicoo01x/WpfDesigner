@@ -626,8 +626,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 				{
 					propertyInfo = FindProperty(elementInstance, propertyType, propertyName);
 				}
-				catch (Exception)
-				{ }
+				catch (Exception ex)
+				{
+					Debug.WriteLine($"FindProperty failed for {propertyType?.Name}.{propertyName}: {ex.Message}");
+				}
 				if (propertyInfo != null)
 					return propertyInfo;
 			}
@@ -857,8 +859,14 @@ namespace ICSharpCode.WpfDesign.XamlDom
 		/// <returns>Returns the XamlObject of the parsed <paramref name="xaml"/>.</returns>
 		public static XamlObject ParseSnippet(XamlObject root, string xaml, XamlParserSettings settings, XamlObject parentObject)
 		{
-			XmlTextReader reader = new XmlTextReader(new StringReader(xaml));
-			var element = root.OwnerDocument.XmlDocument.ReadNode(reader);
+			var readerSettings = new XmlReaderSettings {
+				DtdProcessing = DtdProcessing.Prohibit,
+				XmlResolver = null
+			};
+			XmlNode element;
+			using (var reader = XmlReader.Create(new StringReader(xaml), readerSettings)) {
+				element = root.OwnerDocument.XmlDocument.ReadNode(reader);
+			}
 			
 			if (element != null) {
 				XmlAttribute xmlnsAttribute=null;

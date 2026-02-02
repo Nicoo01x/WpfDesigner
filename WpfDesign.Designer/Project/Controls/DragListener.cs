@@ -25,7 +25,7 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 {
 	public delegate void DragHandler(DragListener drag);
 
-	public class DragListener
+	public class DragListener : IDisposable
 	{
 		static DragListener()
 		{
@@ -33,14 +33,34 @@ namespace ICSharpCode.WpfDesign.Designer.Controls
 		}
 
 		public Transform Transform { get; set; }
-		
+
+		private bool _disposed;
+
 		public DragListener(IInputElement target)
 		{
 			Target = target;
-			
+
 			Target.PreviewMouseLeftButtonDown += Target_MouseDown;
 			Target.PreviewMouseMove += Target_MouseMove;
 			Target.PreviewMouseLeftButtonUp += Target_MouseUp;
+		}
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected virtual void Dispose(bool disposing)
+		{
+			if (!_disposed) {
+				if (disposing && Target != null) {
+					Target.PreviewMouseLeftButtonDown -= Target_MouseDown;
+					Target.PreviewMouseMove -= Target_MouseMove;
+					Target.PreviewMouseLeftButtonUp -= Target_MouseUp;
+				}
+				_disposed = true;
+			}
 		}
 		
 		public void ExternalStart()

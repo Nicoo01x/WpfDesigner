@@ -696,7 +696,9 @@ namespace ICSharpCode.WpfDesign.XamlDom
 					var val2 = pd.GetValue(target);
 					if (object.Equals(val1, val2)) continue;
 					pd.SetValue(b, val2);
-				} catch {}
+				} catch (Exception ex) {
+					Debug.WriteLine($"CopyBinding failed for property {pd.Name}: {ex.Message}");
+				}
 			}
 			
 			return b;

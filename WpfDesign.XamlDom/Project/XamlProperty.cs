@@ -629,8 +629,10 @@ namespace ICSharpCode.WpfDesign.XamlDom
 							return wr;
 						}
 					}
-					catch(Exception)
-					{ }
+					catch(Exception ex)
+					{
+						Debug.WriteLine($"DesignerValue.GetValueFor failed for {propertyInfo?.Name}: {ex.Message}");
+					}
 					var value =  propertyInfo.GetValue(parentObject.Instance);
 					return value;
 				}
