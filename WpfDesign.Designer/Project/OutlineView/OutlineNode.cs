@@ -25,8 +25,6 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 { 
 	public class OutlineNode: OutlineNodeBase, IDisposable
 	{
-		private bool _disposed;
-
 		protected OutlineNode(DesignItem designitem): base(designitem)
 		{
 			UpdateChildren();
@@ -37,24 +35,10 @@ namespace ICSharpCode.WpfDesign.Designer.OutlineView
 		{
 		}
 
-		public void Dispose()
+		public virtual void Dispose()
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		protected virtual void Dispose(bool disposing)
-		{
-			if (!_disposed) {
-				if (disposing) {
-					if (SelectionService != null) {
-						SelectionService.SelectionChanged -= Selection_SelectionChanged;
-					}
-					// Dispose base class event handlers
-					DisposeEventHandlers();
-				}
-				_disposed = true;
-			}
+			SelectionService.SelectionChanged -= Selection_SelectionChanged;
+			DisposeEventHandlers();
 		}
 
 		static OutlineNode()
